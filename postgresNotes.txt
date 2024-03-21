@@ -1,0 +1,25 @@
+CREATE TABLE 'name' (
+    id BIGSERIAL NOT NULL PRIMARY KEY,
+    sender_id ???? NOT NULL,
+    receiver_id ???? NOT NULL,
+    message VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE users(
+    id BIGSERIAL NOT NULL PRIMARY KEY,
+    username VARCHAR(20) NOT NULL,
+    password VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE messages(
+    id BIGSERIAL NOT NULL PRIMARY KEY,
+    sender_id VARCHAR NOT NULL,
+    receiver_id VARCHAR NOT NULL,
+    message VARCHAR NOT NULL,
+    date VARCHAR NOT NULL,
+    date_calc DATE NOT NULL,
+    time VARCHAR NOT NULL,
+    time_num INT NOT NULL
+);
+
+INSERT INTO messages (sender_id, receiver_id, message, date, date_calc, time, time_num) values ('stink1', 'Luke', 'hello luke this is a test', 'Fri Mar 15 2024', '2024-03-15', '23:42', 2342) returning *;
