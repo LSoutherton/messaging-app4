@@ -10,23 +10,6 @@ app.use(express.json());
 
 const port = process.env.PORT || 3001;
 
-//Get all users
-app.get('/api/v1', async (req, res) => {
-    try {
-        const results = await db.query("select * from users")
-
-        res.status(200).json({
-            status: 'sucess',
-            results: results.rows[0],
-            data: {
-                users: results.rows
-            }
-        })
-    } catch (err) {
-        console.log(err)
-    }
-})
-
 //Get all users whos name starts with input
 app.get('/api/v1/:input', async (req, res) => {
     try {
