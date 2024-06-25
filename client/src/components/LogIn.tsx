@@ -72,24 +72,24 @@ const LogIn: React.FC<Props> = ({ example }) => {
             }, 2000);
           }
         } else {
+          setLoading(false);
           alert("Username and password do not match.");
-          setLoading(true);
         }
       } catch (err) {
+        setLoading(false);
         console.log(err);
-        setLoading(true);
       }
     } else {
+      setLoading(false);
       alert("Please enter a username and password.");
-      setLoading(true);
     }
   };
 
   return (
     <>
       {loading ? (
-        <div className="text-4xl absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          Loading...
+        <div className="text-4xl absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-orange-500 text-center">
+          Trying to sign you in, this can take up to a minute...
         </div>
       ) : (
         <div className="bg-gray-100 w-full h-screen">

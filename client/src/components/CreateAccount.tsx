@@ -36,27 +36,29 @@ const CreateAccount = () => {
             console.log(err);
           }
         } else {
+          setLoading(false);
           alert(
             password
               ? "Passwords do not match"
               : "Please eneter a username and password to register."
           );
-          setLoading(true);
         }
       } else {
+        setLoading(false);
         alert("That username is already in use, please select another.");
-        setLoading(true);
       }
     } catch (err) {
+      setLoading(false);
       console.log(err);
-      setLoading(true);
     }
   };
 
   return (
     <>
       {loading ? (
-        <div>Loading...</div>
+        <div className="text-4xl absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-orange-500">
+          Loading...
+        </div>
       ) : (
         <div className="bg-gray-100 w-full h-screen">
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">

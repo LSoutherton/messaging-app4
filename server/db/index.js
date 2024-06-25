@@ -2,10 +2,10 @@ const Pool = require('pg').Pool;
 
 const pool = new Pool({
     user: "messages_app_db_user",
-    password: "faW4re1QZdgBoRIIJmwqekU2SqPxOa9v",
-    host: "cnub3nkf7o1s73avvm00-a.frankfurt-postgres.render.com",
+    password: "O3Z78CgPnyxIFSobmW0Reqf4F9iq8Qv8",
+    host: "dpg-cpspeuo8fa8c739cb260-a.frankfurt-postgres.render.com",
     port: 5432,
-    database: "messages_app_db",
+    database: "messages_app_db_b353",
     ssl: true
 })
 
