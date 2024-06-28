@@ -1,5 +1,5 @@
 import axios from "axios";
 
 export default axios.create({
-    baseURL: 'https://messaging-app-ku7v.onrender.com/api/v1'
+    baseURL: 'https://messaging-web-app-e0lv.onrender.com/api/v1'
 });

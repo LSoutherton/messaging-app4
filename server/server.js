@@ -5,13 +5,13 @@ const cors = require('cors');
 
 const app = express()
 
-app.use(cors());
+app.use(cors({origin: true}));
 app.use(express.json());
 
 const port = process.env.PORT || 3001;
 
 //Get all users whos name starts with input
-app.get('/api/v1/:input', async (req, res) => {
+app.get('/api/v1/:input', cors(), async (req, res) => {
     try {
         const results = await db.query("select * from users where username like $1",
         [
@@ -32,7 +32,7 @@ app.get('/api/v1/:input', async (req, res) => {
 })
 
 // User is created and logged in
-app.post('/api/v1/createUser', async (req, res) => {
+app.post('/api/v1/createUser',cors(), async (req, res) => {
     try {
         const results = await db.query(
             'INSERT INTO users (username, password) values ($1, $2) returning *',
