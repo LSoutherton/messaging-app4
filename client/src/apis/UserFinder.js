@@ -1,5 +1,6 @@
 import axios from "axios";
 
 export default axios.create({
-    baseURL: 'https://messaging-web-app-e0lv.onrender.com/api/v1'
+    baseURL: 'https://messaging-web-app-1.onrender.com/api/v1'
+    // baseURL: 'http://localhost:3001/api/v1'
 });
