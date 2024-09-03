@@ -4,11 +4,13 @@ import UserFinder from "../apis/UserFinder";
 import { useDispatch } from "react-redux";
 import { logIn } from "../features/userSlice";
 
+//Defines types
 type Props = {
   example: boolean;
 };
 
 const LogIn: React.FC<Props> = ({ example }) => {
+  //Sets states
   const [username, setUsername] = useState<string>(example ? "Example" : "");
   const [password, setPassword] = useState<string>(
     example ? "examplePassword1" : ""
@@ -16,15 +18,19 @@ const LogIn: React.FC<Props> = ({ example }) => {
 
   const [loading, setLoading] = useState<boolean>(false);
 
+  //Used to log user in
   const dispatch = useDispatch();
 
   const handleLogIn = async (e) => {
+    //Prevents page refresh
     e.preventDefault();
 
     setLoading(true);
 
+    //Checks that a username and password have been provided
     if (username && password) {
       try {
+        //Makes a call to the db to get the user based on the username that was entered
         const response = await UserFinder.get(`/${username}`);
         if (
           response.data.data.users.length === 1 &&
@@ -38,11 +44,14 @@ const LogIn: React.FC<Props> = ({ example }) => {
             })
           );
           if (username === "Example") {
+            //Deletes any messages previously sent to or sent by the Example account
             const response = await UserFinder.delete(`/delete/example`);
+            //Sets a timeout to trigger after 2 seconds
             setTimeout(async () => {
               const today = new Date();
               const dateString = today.toDateString();
 
+              //Gets the date and time and formats them
               const hours = today.getHours();
               let stringHours = today.getHours().toString();
               if (hours < 10) {
@@ -59,6 +68,7 @@ const LogIn: React.FC<Props> = ({ example }) => {
 
               const time_num = Number(stringHours + stringMinutes);
 
+              //Sends a message to the db from the Bot account
               const response = await UserFinder.post("/sendMessage", {
                 sender: "Bot",
                 receiver: "Example",
@@ -73,6 +83,7 @@ const LogIn: React.FC<Props> = ({ example }) => {
           }
         } else {
           setLoading(false);
+          //Sends an alert if the username and password do not match
           alert("Username and password do not match.");
         }
       } catch (err) {
@@ -81,6 +92,7 @@ const LogIn: React.FC<Props> = ({ example }) => {
       }
     } else {
       setLoading(false);
+      //Sends an alert if either the username or password wasn't inputted
       alert("Please enter a username and password.");
     }
   };

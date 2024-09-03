@@ -4,28 +4,38 @@ import { useDispatch } from "react-redux";
 import { logIn } from "../features/userSlice";
 
 const CreateAccount = () => {
+  //Defines state values for the component
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [passwordCheck, setPasswordCheck] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
+  //Used for user log in
   const dispatch = useDispatch();
 
   const handleSubmit = async (e) => {
+    //Prevents page refresh on function trigger
     e.preventDefault();
 
+    //Sets the loading state to be true so that we can render a loading screen whilst the user is logged in
     setLoading(true);
 
+    //UserFinder is the base url for the api
     try {
+      //Makes a call to the db to get all users  with the entered username
       const response = await UserFinder.get(`/${username}`);
+      //Checks ti see if this username is already in the database
       if (response.data.data.users.length === 0) {
+        //Checks to see if the passwords match and if a username was provided
         if (password === passwordCheck && username && password) {
+          //Creates the user
           try {
             const response = await UserFinder.post("/createUser", {
               username,
               password,
             });
 
+            //Logs the user in
             dispatch(
               logIn({
                 username,
@@ -37,6 +47,7 @@ const CreateAccount = () => {
           }
         } else {
           setLoading(false);
+          //Returns an alert message based on if a password was provided
           alert(
             password
               ? "Passwords do not match"

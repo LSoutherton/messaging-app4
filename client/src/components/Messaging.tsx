@@ -19,6 +19,7 @@ type MessagesList = {
 };
 
 const Messaging = ({ user }) => {
+  //Used for page resizing
   const [screenSize, setScreenSize] = useState(window.innerWidth < 900);
 
   const updateView = () => {
@@ -30,17 +31,20 @@ const Messaging = ({ user }) => {
     return () => window.removeEventListener("resize", updateView);
   });
 
+  //Gets the current user
   const location = useLocation();
   const currentUser = useSelector(selectUser);
 
   const userConversation = user || location.state.user;
 
+  //Sets state values
   const [message, setMessage] = useState<string>("");
 
   const messagesRef = useRef<HTMLDivElement | null>(null);
 
   const [messagesList, setMessagesList] = useState<MessagesList[] | []>([]);
 
+  //Gets messages for the clicked conversation from the db
   const getMessages = async () => {
     try {
       const response = await UserFinder.get(
@@ -52,10 +56,12 @@ const Messaging = ({ user }) => {
     }
   };
 
+  //Runs getMessages when a new user is clicked
   useEffect(() => {
     getMessages();
   }, [userConversation]);
 
+  //Refreshes messages every 10 seconds by performing a get request
   useEffect(() => {
     const intervalId = setInterval(() => {
       getMessages();
@@ -63,16 +69,20 @@ const Messaging = ({ user }) => {
     return () => clearInterval(intervalId);
   }, []);
 
+  //Scrolls to the bottom message when total number of messages in the conversation increases
   useEffect(() => {
     messagesRef.current?.scrollIntoView({
       behavior: "smooth",
     });
     if (messagesList.length > 0) {
+      //Saves the id of the most recent message into localstorage. This acts as the most recent read message id.
       const messageId = messagesList[messagesList.length - 1].id;
       localStorage.setItem(`${userConversation}`, JSON.stringify(messageId));
     }
   }, [messagesList.length]);
 
+  //Maps over userMessages to create a list of message components
+  //The self varaible tells us if it was sent by the current user or not.
   const renderMessages = messagesList.map((message: MessagesList) => {
     let self = false;
     if (message.sender_id === currentUser.username) {
@@ -89,6 +99,7 @@ const Messaging = ({ user }) => {
   });
 
   const sendMessage = async (e) => {
+    //Prevents page refresh
     e.preventDefault();
 
     const today = new Date();
@@ -110,10 +121,12 @@ const Messaging = ({ user }) => {
 
     const time_num = Number(stringHours + stringMinutes);
 
+    //Sends alert if there is no selected user or message
     if (!userConversation || !message) {
       alert("To send a message you must provide the message body.");
     } else {
       try {
+        //Sends the message to db
         const response = await UserFinder.post("/sendMessage", {
           sender: currentUser.username,
           receiver: userConversation,
@@ -123,6 +136,7 @@ const Messaging = ({ user }) => {
           time: currentTime,
           time_num,
         });
+        //Sets the current message body to be empty then gets the messages from db
         setMessage("");
         getMessages();
       } catch (err) {

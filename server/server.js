@@ -11,6 +11,8 @@ app.use(express.json());
 const port = process.env.PORT || 3001;
 
 //Get all users whos name starts with input
+//Uses async function as we know that we will receieve a promise, this allows us to execute the further code whilst waiting for the promise to be executed.
+//BY not including the parameter within the SQL, we avoid SQL injection.
 app.get('/api/v1/:input', cors(), async (req, res) => {
     try {
         const results = await db.query("select * from users where username like $1",
@@ -19,6 +21,7 @@ app.get('/api/v1/:input', cors(), async (req, res) => {
         ]
         )
 
+        //We return the res (response) and include the data that we have just received as part of this.
         res.status(200).json({
             status: 'sucess',
             results: results.rows[0],
@@ -26,6 +29,7 @@ app.get('/api/v1/:input', cors(), async (req, res) => {
                 users: results.rows
             }
         })
+        //Catches and logs the error if there is one.
     } catch (err) {
         console.log(err)
     }
@@ -83,24 +87,31 @@ app.post('/api/v1/sendMessage', async (req, res) => {
 //Get all messages for the current user
 app.get('/api/v1/getMessages/:username', async (req, res) => {
     try {
+        //Gets the messages sent by the current user
         const sent = await db.query('select * from messages where sender_id = $1',
         [
             req.params.username
         ])
 
+        //Gets the messages received by the current user
         const received = await db.query('select * from messages where receiver_id = $1',
         [
             req.params.username
         ])
 
+        //Creates a new object using the map method. Each message is added to the object along with the id of the receiver.
         const sentFiltered = [...new Map(sent.rows.map(message => [message.receiver_id, message])).values()]
 
         const receivedFiltered = [...new Map(received.rows.map(message => [message.sender_id, message])).values()]
 
+        //Combines the 2 new objects to make one containing all messages
         const messages = sentFiltered.concat(receivedFiltered)
 
+        //Creates an empty array
         let testingArray = [];
 
+        //Sorts the array by time that each message was sent.
+        //A negative return tells us that b is more recent, a positive tells us a is more recent.
         messages.sort((a, b) => {
             if (a.date === b.date) {
                 if (a.time_num - b.time_num < 0) {
@@ -114,6 +125,13 @@ app.get('/api/v1/getMessages/:username', async (req, res) => {
                 return -1
             }
         })
+
+        /*
+        Each message will appear once in the sentFiltered list and again in the receivedFiltered list.
+        We use the below code to identify these duplicates and add them to the testingArray.
+        We check some of the parameters are the same then conclude that the messages are infact the same (this is not best practice).
+        The message is then added to the testingArray.
+        */
 
         const duplicatesArray = sentFiltered.forEach((sent) => {
             receivedFiltered.forEach((received) => {
@@ -133,17 +151,21 @@ app.get('/api/v1/getMessages/:username', async (req, res) => {
             })
         })
 
+        //We look at each message in the testingArray and find the first instance of it in the messages list. 
+        //Then splice is used to remove this instance of the message and results in there bein gno duplicate messages.
         testingArray.forEach((item) => {
             messages.forEach((message) => {
                 if (item.id === message.id) {
                     const index = messages.indexOf(item)
                     if (index > -1) {
+                        //Removes from messages array
                         messages.splice(index, 1);
                     }
                 }
             })
         })
 
+        //The messages list and the testingArray are then returned from the api call. Only the messages list is then used on the front end so testingArray can be removed after testing is complete.
         res.status(200).json({
             status: 'sucess',
             data: {
@@ -191,6 +213,7 @@ app.delete('/api/v1/delete/example', async (req, res) => {
     }
 })
 
+//This will help to see if everything is working correctly as it will trigger on startup.
 app.listen(port, () => {
     console.log(`listening on port ${port}`)
 });
